@@ -5,13 +5,18 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.TileItem;
-import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.http.api.loottracker.LootRecordType;
+
+import java.util.Collection;
 
 @Slf4j
 @PluginDescriptor(
@@ -28,21 +33,36 @@ public class ImadrumMoneyPlugin extends Plugin {
     @Inject
 	private SoundclipManager soundclipManager;
 
+
     @Subscribe
-    public void onItemSpawned(ItemSpawned event) {
-		TileItem spawned = event.getItem();
-    	if (spawned == null)
-    		return;
+    public void onNpcLootReceived(NpcLootReceived npcLootReceived){
+        handleReceivedLoot(npcLootReceived.getItems());
+    }
 
-		int stackValue = itemManager.getItemPrice(spawned.getId()) * spawned.getQuantity();
+    @Subscribe
+    public void onPlayerLootReceived(PlayerLootReceived playerLootReceived){
+        handleReceivedLoot(playerLootReceived.getItems());
+    }
 
-		//Load and play the sound clip in a different thread to prevent lag
-        Thread t = new Thread(() -> {
-            if (stackValue >= config.minValue()){
-                soundclipManager.playClip(soundclipManager.getRandomSoundclip());
+    @Subscribe
+    public void onLootReceived(LootReceived lootReceived) {
+        if (lootReceived.getType() != LootRecordType.EVENT && lootReceived.getType() != LootRecordType.PICKPOCKET) {
+            return;
+        }
+        handleReceivedLoot(lootReceived.getItems());
+    }
+
+    private void handleReceivedLoot(Collection<ItemStack> items) {
+        for (ItemStack stack : items) {
+            int value = itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
+
+            if (value >= config.minValue()) {
+                new Thread(() -> {
+                    soundclipManager.playClip(soundclipManager.getRandomSoundclip());
+                }).start();
+                return;
             }
-        });
-        t.start();
+        }
     }
 
     @Provides
