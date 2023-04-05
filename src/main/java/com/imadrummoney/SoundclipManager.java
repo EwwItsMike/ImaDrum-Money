@@ -32,7 +32,7 @@ public class SoundclipManager {
         String getFileName() {
             return fileName;
         }
-    };
+    }
 
     @Inject
     private ImadrumMoneyConfig config;
@@ -44,8 +44,10 @@ public class SoundclipManager {
     // Source: c-engineer-completed plugin
     // https://github.com/m0bilebtw/c-engineer-completed
     private boolean loadClip(Sound sound) {
-        try (InputStream s = getClass().getResourceAsStream(sound.getFileName())) {
-            try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(s)){
+        try {
+            InputStream s = getClass().getResourceAsStream(sound.getFileName());
+            InputStream bufferedIn = new BufferedInputStream(s);
+            try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)){
                 clip.open(audioStream);
             }
             return true;
