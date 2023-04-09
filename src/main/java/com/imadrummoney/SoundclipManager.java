@@ -44,14 +44,12 @@ public class SoundclipManager {
     // Source: c-engineer-completed plugin
     // https://github.com/m0bilebtw/c-engineer-completed
     private boolean loadClip(Sound sound) {
-        try {
-            InputStream s = getClass().getResourceAsStream(sound.getFileName());
-            InputStream bufferedIn = new BufferedInputStream(s);
-            try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)){
+        try (InputStream s = getClass().getResourceAsStream(sound.getFileName());
+             InputStream bufferedIn = new BufferedInputStream(s);
+             AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)){
                 clip.open(audioStream);
-            }
             return true;
-        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException | NullPointerException e) {
             log.warn("Failed to load sound " + sound, e);
         }
         return false;
