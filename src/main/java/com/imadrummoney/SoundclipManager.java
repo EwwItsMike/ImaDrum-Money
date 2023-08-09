@@ -21,7 +21,10 @@ public class SoundclipManager {
         SOUND6("/imadrumMoney6.wav"),
         SOUND7("/imadrumMoney7.wav"),
         SOUND8("/imadrumMoney8.wav"),
-        SOUND9("/imadrumMoney9.wav");
+        SOUND9("/imadrumMoney9.wav"),
+        NEWPET("/newPetDrop.wav"),
+        DUPEPET("/dupePetDrop.wav"),
+        CLUEDROP("/clueScrollDrop.wav");
 
         private final String fileName;
 
@@ -91,7 +94,7 @@ public class SoundclipManager {
 
     public Sound getRandomSoundclip() {
         Random r = new Random();
-        int randomClipNr = r.nextInt(Sound.values().length + 1);
+        int randomClipNr = r.nextInt(10);
 
         switch (randomClipNr){
             case 1: return Sound.SOUND2;
@@ -104,6 +107,18 @@ public class SoundclipManager {
             case 8: return Sound.SOUND9;
             default: return Sound.SOUND1;
         }
+    }
+
+    public Sound getClueSound() {
+        return Sound.CLUEDROP;
+    }
+
+    public Sound getNewPetSound() {
+        return Sound.NEWPET;
+    }
+
+    public Sound getDupePetSound() {
+        return Sound.DUPEPET;
     }
 
 }
