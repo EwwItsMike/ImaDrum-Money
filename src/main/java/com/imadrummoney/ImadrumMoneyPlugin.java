@@ -73,12 +73,12 @@ public class ImadrumMoneyPlugin extends Plugin {
 
         String message = chatmessage.getMessage();
 
-        if (message.contains(FOLLOW_PET) || message.contains(INVENTORY_PET)) {
+        if ((message.contains(FOLLOW_PET) || message.contains(INVENTORY_PET)) && config.receivePetNotif()) {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getNewPetSound());
             }).start();
         }
-        else if (message.contains(DUPE_PET)){
+        else if (message.contains(DUPE_PET) && config.receivePetNotif()){
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getDupePetSound());
             }).start();
@@ -89,14 +89,14 @@ public class ImadrumMoneyPlugin extends Plugin {
         for (ItemStack stack : items) {
             int value = itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
 
-            if (value >= config.minValue()) {
+            if (value >= config.minValue() && config.receiveLootNotif()) {
                 new Thread(() -> {
                     soundclipManager.playClip(soundclipManager.getRandomSoundclip());
                 }).start();
                 return;
             }
 
-            if (isClueScroll(stack.getId())){
+            if (isClueScroll(stack.getId()) && config.receiveClueNotif()){
                 new Thread(() -> {
                     soundclipManager.playClip(soundclipManager.getClueSound());
                 }).start();

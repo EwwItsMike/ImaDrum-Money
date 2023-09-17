@@ -25,4 +25,26 @@ public interface ImadrumMoneyConfig extends Config
 		return 75;
 	}
 
+	@ConfigItem(
+			keyName = "lootNotif",
+			name = "Receive loot notifications",
+			description = "Receive sound notifications for loot"
+	)
+	default boolean receiveLootNotif() { return true; }
+
+	@ConfigItem(
+			keyName = "petNotif",
+			name = "Receive pet notifications",
+			description = "Receive sound notifications for pet drops"
+	)
+	default boolean receivePetNotif() { return true; }
+
+	@ConfigItem(
+			keyName = "clueNotif",
+			name = "Receive clue notifications",
+			description = "Receive sound notifications for clue scrolls"
+	)
+	default boolean receiveClueNotif() { return true; }
+
+
 }
