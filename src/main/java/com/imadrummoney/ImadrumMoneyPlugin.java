@@ -19,10 +19,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.http.api.loottracker.LootRecordType;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
@@ -44,16 +41,18 @@ public class ImadrumMoneyPlugin extends Plugin {
     private static final String INVENTORY_PET = "You feel something weird sneaking into your backpack";
     private static final String DUPE_PET = "You have a funny feeling like you would have been followed";
 
+    private static final ArrayList<String> BARROWS_ITEMS = new ArrayList<>(Arrays.asList("Ahrim's", "Karil's", "Guthan's", "Dharok's", "Verac's", "Torag's"));
+
 
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived npcLootReceived){
-        handleReceivedLoot(npcLootReceived.getItems());
+        handleReceivedLoot(npcLootReceived.getItems(), npcLootReceived.getNpc().getName());
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived){
-        handleReceivedLoot(playerLootReceived.getItems());
+        handleReceivedLoot(playerLootReceived.getItems(), playerLootReceived.getPlayer().getName());
     }
 
     @Subscribe
@@ -61,7 +60,7 @@ public class ImadrumMoneyPlugin extends Plugin {
         if (lootReceived.getType() != LootRecordType.EVENT && lootReceived.getType() != LootRecordType.PICKPOCKET) {
             return;
         }
-        handleReceivedLoot(lootReceived.getItems());
+        handleReceivedLoot(lootReceived.getItems(), lootReceived.getName());
     }
 
     @Subscribe
@@ -83,7 +82,14 @@ public class ImadrumMoneyPlugin extends Plugin {
         }
     }
 
-    private void handleReceivedLoot(Collection<ItemStack> items) {
+    private void handleReceivedLoot(Collection<ItemStack> items, String name) {
+        if (name != null && name.equals("Barrows") && !containsBarrowsItem(items)){
+            new Thread(() -> {
+               soundclipManager.playClip(soundclipManager.getRandomSadSoundClip());
+            });
+            return;
+        }
+
         for (ItemStack stack : items) {
             int value = itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
 
@@ -108,6 +114,16 @@ public class ImadrumMoneyPlugin extends Plugin {
         ItemComposition itemComposition = itemManager.getItemComposition(ID);
 
         return itemComposition.getName().toLowerCase(Locale.ROOT).contains("clue scroll");
+    }
+
+    private Boolean containsBarrowsItem(Collection<ItemStack> items) {
+        for (ItemStack item : items){
+            ItemComposition comp = itemManager.getItemComposition(item.getId());
+            for (String barrowsName : BARROWS_ITEMS){
+                if (comp.getName().contains(barrowsName)) return true;
+            }
+        }
+        return false;
     }
 
     @Provides

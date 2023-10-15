@@ -24,7 +24,9 @@ public class SoundclipManager {
         SOUND9("/imadrumMoney9.wav"),
         NEWPET("/newPetDrop.wav"),
         DUPEPET("/dupePetDrop.wav"),
-        CLUEDROP("/clueScrollDrop.wav");
+        CLUEDROP("/clueScrollDrop.wav"),
+        NOTHING("/nothing.wav"),
+        SADNESS("/sadness.wav");
 
         private final String fileName;
 
@@ -107,6 +109,13 @@ public class SoundclipManager {
             case 8: return Sound.SOUND9;
             default: return Sound.SOUND1;
         }
+    }
+
+    public Sound getRandomSadSoundClip() {
+        if (new Random().nextInt(2) == 0) {
+            return Sound.SADNESS;
+        }
+        return Sound.NOTHING;
     }
 
     public Sound getClueSound() {
