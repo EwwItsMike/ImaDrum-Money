@@ -83,7 +83,10 @@ public class ImadrumMoneyPlugin extends Plugin {
     }
 
     private void handleReceivedLoot(Collection<ItemStack> items, String name) {
-        if (name != null && name.equals("Barrows") && !containsBarrowsItem(items)){
+        if (name != null && name.equals("Barrows")
+                && !containsBarrowsItem(items)
+                && config.receiveBarrowsSadnessNotif()){
+
             new Thread(() -> {
                soundclipManager.playClip(soundclipManager.getRandomSadSoundClip());
             });
