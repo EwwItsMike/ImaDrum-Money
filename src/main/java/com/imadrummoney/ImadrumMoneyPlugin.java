@@ -89,7 +89,7 @@ public class ImadrumMoneyPlugin extends Plugin {
 
             new Thread(() -> {
                soundclipManager.playClip(soundclipManager.getRandomSadSoundClip());
-            });
+            }).start();
             return;
         }
 
@@ -123,7 +123,9 @@ public class ImadrumMoneyPlugin extends Plugin {
         for (ItemStack item : items){
             ItemComposition comp = itemManager.getItemComposition(item.getId());
             for (String barrowsName : BARROWS_ITEMS){
-                if (comp.getName().contains(barrowsName)) return true;
+                if (comp.getName().contains(barrowsName)){
+                    return true;
+                }
             }
         }
         return false;
