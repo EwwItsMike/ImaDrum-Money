@@ -31,10 +31,10 @@ public class ImadrumMoneyPlugin extends Plugin {
     private ImadrumMoneyConfig config;
 
     @Inject
-	private ItemManager itemManager;
+    private ItemManager itemManager;
 
     @Inject
-	private SoundclipManager soundclipManager;
+    private SoundclipManager soundclipManager;
 
     @Inject
     Client client;
@@ -49,14 +49,13 @@ public class ImadrumMoneyPlugin extends Plugin {
     private static final ArrayList<String> BARROWS_ITEMS = new ArrayList<>(Arrays.asList("Ahrim's", "Karil's", "Guthan's", "Dharok's", "Verac's", "Torag's"));
 
 
-
     @Subscribe
-    public void onNpcLootReceived(NpcLootReceived npcLootReceived){
+    public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
         handleReceivedLoot(npcLootReceived.getItems(), npcLootReceived.getNpc().getName());
     }
 
     @Subscribe
-    public void onPlayerLootReceived(PlayerLootReceived playerLootReceived){
+    public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
         handleReceivedLoot(playerLootReceived.getItems(), playerLootReceived.getPlayer().getName());
     }
 
@@ -69,7 +68,7 @@ public class ImadrumMoneyPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onChatMessage(ChatMessage chatmessage){
+    public void onChatMessage(ChatMessage chatmessage) {
 
         if (chatmessage.getType() != ChatMessageType.GAMEMESSAGE) {
             return;
@@ -81,18 +80,15 @@ public class ImadrumMoneyPlugin extends Plugin {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getNewPetSound());
             }).start();
-        }
-        else if (message.contains(DUPE_PET) && config.receivePetNotif()){
+        } else if (message.contains(DUPE_PET) && config.receivePetNotif()) {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getDupePetSound());
             }).start();
-        }
-        else if (message.contains(SUPERIOR) && config.receiveSuperiorSoundNotif()){
+        } else if (message.contains(SUPERIOR) && config.receiveSuperiorSoundNotif()) {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getSuperiorSound());
             }).start();
-        }
-        else if (message.contains(DEATH) && config.receiveDeathSoundNotif()){
+        } else if (message.contains(DEATH) && config.receiveDeathSoundNotif()) {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getDeathSound());
             }).start();
@@ -100,11 +96,11 @@ public class ImadrumMoneyPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onSoundEffectPlayed(SoundEffectPlayed event){
+    public void onSoundEffectPlayed(SoundEffectPlayed event) {
         if (!config.replaceRubySpecSound())
             return;
 
-        if (event.getSoundId() == 2911){
+        if (event.getSoundId() == 2911) {
             event.consume();
 
             soundclipManager.playClip(soundclipManager.getRubySpecSound());
@@ -114,10 +110,10 @@ public class ImadrumMoneyPlugin extends Plugin {
     private void handleReceivedLoot(Collection<ItemStack> items, String name) {
         if (name != null && name.equals("Barrows")
                 && !containsBarrowsItem(items)
-                && config.receiveBarrowsSadnessNotif()){
+                && config.receiveBarrowsSadnessNotif()) {
 
             new Thread(() -> {
-               soundclipManager.playClip(soundclipManager.getRandomSadSoundClip());
+                soundclipManager.playClip(soundclipManager.getRandomSadSoundClip());
             }).start();
             return;
         }
@@ -132,7 +128,7 @@ public class ImadrumMoneyPlugin extends Plugin {
                 return;
             }
 
-            if (isClueScroll(stack.getId()) && config.receiveClueNotif()){
+            if (isClueScroll(stack.getId()) && config.receiveClueNotif()) {
                 new Thread(() -> {
                     soundclipManager.playClip(soundclipManager.getClueSound());
                 }).start();
@@ -142,17 +138,17 @@ public class ImadrumMoneyPlugin extends Plugin {
         }
     }
 
-    private Boolean isClueScroll(Integer ID){
+    private Boolean isClueScroll(Integer ID) {
         ItemComposition itemComposition = itemManager.getItemComposition(ID);
 
         return itemComposition.getName().toLowerCase(Locale.ROOT).contains("clue scroll");
     }
 
     private Boolean containsBarrowsItem(Collection<ItemStack> items) {
-        for (ItemStack item : items){
+        for (ItemStack item : items) {
             ItemComposition comp = itemManager.getItemComposition(item.getId());
-            for (String barrowsName : BARROWS_ITEMS){
-                if (comp.getName().contains(barrowsName)){
+            for (String barrowsName : BARROWS_ITEMS) {
+                if (comp.getName().contains(barrowsName)) {
                     return true;
                 }
             }
