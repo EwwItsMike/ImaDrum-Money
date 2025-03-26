@@ -76,4 +76,27 @@ public interface ImadrumMoneyConfig extends Config
 	)
 	default boolean receiveBarrowsSadnessNotif() {return true;}
 
+	@ConfigItem(
+			keyName = "REEEplacement",
+			name = "Replace Ruby Bolts spec sound",
+			description = "Replace the sound of Ruby Bolts special effect",
+			section = situationSettings
+	)
+	default boolean replaceRubySpecSound() {return true;}
+
+	@ConfigItem(
+			keyName = "pleae",
+			name = "Play death sound effect",
+			description = "Receive sound notifications when you die",
+			section = situationSettings
+	)
+	default boolean receiveDeathSoundNotif() { return true; }
+
+	@ConfigItem(
+			keyName = "Superior",
+			name = "Receive Superior spawn notifications",
+			description = "Receive sound notifications for Superior creature spawns",
+			section = situationSettings
+	)
+	default boolean receiveSuperiorSoundNotif() { return true; }
 }

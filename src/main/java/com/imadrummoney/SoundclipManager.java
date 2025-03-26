@@ -26,8 +26,11 @@ public class SoundclipManager {
         DUPEPET("/dupePetDrop.wav"),
         CLUEDROP("/clueScrollDrop.wav"),
         NOTHING("/nothing.wav"),
-        SADNESS("/sadness.wav");
-
+        SADNESS("/sadness.wav"),
+        RUBYSPEC("/alotofdamage.wav"),
+        RUBYSPEC2("/REEE.wav"),
+        SUPERIOR("/bigboi.wav"),
+        DEATH("/pleae.wav");
         private final String fileName;
 
         Sound(String filename) {
@@ -51,8 +54,8 @@ public class SoundclipManager {
     private boolean loadClip(Sound sound) {
         try (InputStream s = getClass().getResourceAsStream(sound.getFileName());
              InputStream bufferedIn = new BufferedInputStream(s);
-             AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)){
-                clip.open(audioStream);
+             AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)) {
+            clip.open(audioStream);
             return true;
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException | NullPointerException e) {
             log.warn("Failed to load sound " + sound, e);
@@ -98,16 +101,25 @@ public class SoundclipManager {
         Random r = new Random();
         int randomClipNr = r.nextInt(10);
 
-        switch (randomClipNr){
-            case 1: return Sound.SOUND2;
-            case 2: return Sound.SOUND3;
-            case 3: return Sound.SOUND4;
-            case 4: return Sound.SOUND5;
-            case 5: return Sound.SOUND6;
-            case 6: return Sound.SOUND7;
-            case 7: return Sound.SOUND8;
-            case 8: return Sound.SOUND9;
-            default: return Sound.SOUND1;
+        switch (randomClipNr) {
+            case 1:
+                return Sound.SOUND2;
+            case 2:
+                return Sound.SOUND3;
+            case 3:
+                return Sound.SOUND4;
+            case 4:
+                return Sound.SOUND5;
+            case 5:
+                return Sound.SOUND6;
+            case 6:
+                return Sound.SOUND7;
+            case 7:
+                return Sound.SOUND8;
+            case 8:
+                return Sound.SOUND9;
+            default:
+                return Sound.SOUND1;
         }
     }
 
@@ -128,6 +140,22 @@ public class SoundclipManager {
 
     public Sound getDupePetSound() {
         return Sound.DUPEPET;
+    }
+
+    public Sound getRubySpecSound() {
+
+        if (new Random().nextInt(20) == 0)
+            return Sound.RUBYSPEC;
+        else
+            return Sound.RUBYSPEC2;
+    }
+
+    public Sound getDeathSound() {
+        return Sound.DEATH;
+    }
+
+    public Sound getSuperiorSound() {
+        return Sound.SUPERIOR;
     }
 
 }

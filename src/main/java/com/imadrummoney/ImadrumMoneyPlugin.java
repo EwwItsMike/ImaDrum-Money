@@ -5,9 +5,9 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.ItemComposition;
+import net.runelite.api.*;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
@@ -36,10 +36,15 @@ public class ImadrumMoneyPlugin extends Plugin {
     @Inject
 	private SoundclipManager soundclipManager;
 
+    @Inject
+    Client client;
+
     // Pet Drops
     private static final String FOLLOW_PET = "You have a funny feeling like you're being followed";
     private static final String INVENTORY_PET = "You feel something weird sneaking into your backpack";
     private static final String DUPE_PET = "You have a funny feeling like you would have been followed";
+    private static final String SUPERIOR = "A superior foe has appeared...";
+    private static final String DEATH = "Oh dear, you are dead!";
 
     private static final ArrayList<String> BARROWS_ITEMS = new ArrayList<>(Arrays.asList("Ahrim's", "Karil's", "Guthan's", "Dharok's", "Verac's", "Torag's"));
 
@@ -65,8 +70,10 @@ public class ImadrumMoneyPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage chatmessage){
-        if (chatmessage.getType() != ChatMessageType.GAMEMESSAGE)
+
+        if (chatmessage.getType() != ChatMessageType.GAMEMESSAGE) {
             return;
+        }
 
         String message = chatmessage.getMessage();
 
@@ -79,6 +86,28 @@ public class ImadrumMoneyPlugin extends Plugin {
             new Thread(() -> {
                 soundclipManager.playClip(soundclipManager.getDupePetSound());
             }).start();
+        }
+        else if (message.contains(SUPERIOR) && config.receiveSuperiorSoundNotif()){
+            new Thread(() -> {
+                soundclipManager.playClip(soundclipManager.getSuperiorSound());
+            }).start();
+        }
+        else if (message.contains(DEATH) && config.receiveDeathSoundNotif()){
+            new Thread(() -> {
+                soundclipManager.playClip(soundclipManager.getDeathSound());
+            }).start();
+        }
+    }
+
+    @Subscribe
+    public void onSoundEffectPlayed(SoundEffectPlayed event){
+        if (!config.replaceRubySpecSound())
+            return;
+
+        if (event.getSoundId() == 2911){
+            event.consume();
+
+            soundclipManager.playClip(soundclipManager.getRubySpecSound());
         }
     }
 
