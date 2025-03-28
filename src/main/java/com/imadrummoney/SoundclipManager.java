@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sound.sampled.*;
 import java.io.*;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Singleton
 @Slf4j
@@ -98,8 +98,7 @@ public class SoundclipManager {
     }
 
     public Sound getRandomSoundclip() {
-        Random r = new Random();
-        int randomClipNr = r.nextInt(10);
+        int randomClipNr = ThreadLocalRandom.current().nextInt(10);
 
         switch (randomClipNr) {
             case 1:
@@ -124,7 +123,7 @@ public class SoundclipManager {
     }
 
     public Sound getRandomSadSoundClip() {
-        if (new Random().nextInt(2) == 0) {
+        if (ThreadLocalRandom.current().nextInt(20) == 0) {
             return Sound.SADNESS;
         }
         return Sound.NOTHING;
@@ -143,8 +142,7 @@ public class SoundclipManager {
     }
 
     public Sound getRubySpecSound() {
-
-        if (new Random().nextInt(50) == 0)
+        if (ThreadLocalRandom.current().nextInt(50) == 0)
             return Sound.RUBYSPEC2;
         else
             return Sound.RUBYSPEC;
