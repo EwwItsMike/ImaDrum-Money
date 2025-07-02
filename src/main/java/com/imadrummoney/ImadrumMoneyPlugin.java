@@ -61,7 +61,7 @@ public class ImadrumMoneyPlugin extends Plugin {
 
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
-        if (lootReceived.getType() != LootRecordType.EVENT && lootReceived.getType() != LootRecordType.PICKPOCKET) {
+        if (lootReceived.getType() != LootRecordType.EVENT && lootReceived.getType() != LootRecordType.PICKPOCKET && lootReceived.getType() != LootRecordType.NPC) {
             return;
         }
         handleReceivedLoot(lootReceived.getItems(), lootReceived.getName());
@@ -100,11 +100,19 @@ public class ImadrumMoneyPlugin extends Plugin {
         if (!config.replaceRubySpecSound())
             return;
 
+
         if (event.getSoundId() == 2911) {
+            if (isFightingAdamantDragon())
+                return;
+
             event.consume();
 
             soundclipManager.playClip(soundclipManager.getRubySpecSound());
         }
+    }
+
+    private boolean isFightingAdamantDragon(){
+        return Objects.requireNonNull(client.getLocalPlayer().getInteracting().getName()).equalsIgnoreCase("Adamant dragon");
     }
 
     private void handleReceivedLoot(Collection<ItemStack> items, String name) {
@@ -141,7 +149,7 @@ public class ImadrumMoneyPlugin extends Plugin {
     private Boolean isClueScroll(Integer ID) {
         ItemComposition itemComposition = itemManager.getItemComposition(ID);
 
-        return itemComposition.getName().toLowerCase(Locale.ROOT).contains("clue scroll");
+        return itemComposition.getName().toLowerCase(Locale.ROOT).contains("clue scroll") || itemComposition.getName().toLowerCase(Locale.ROOT).contains("scroll box");
     }
 
     private Boolean containsBarrowsItem(Collection<ItemStack> items) {
