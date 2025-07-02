@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sound.sampled.*;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.concurrent.ThreadLocalRandom;
+import net.runelite.client.audio.*;
 
 @Singleton
 @Slf4j
@@ -45,56 +47,18 @@ public class SoundclipManager {
     @Inject
     private ImadrumMoneyConfig config;
 
-    private Clip clip = null;
-    private static final long CLIP_MTIME_UNLOADED = -2;
-    private long lastClipMTime = CLIP_MTIME_UNLOADED;
+    @Inject
+    private AudioPlayer audioPlayer;
 
-    // Source: c-engineer-completed plugin
-    // https://github.com/m0bilebtw/c-engineer-completed
-    private boolean loadClip(Sound sound) {
-        try (InputStream s = getClass().getResourceAsStream(sound.getFileName());
-             InputStream bufferedIn = new BufferedInputStream(s);
-             AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)) {
-            clip.open(audioStream);
-            return true;
-        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException | NullPointerException e) {
-            log.warn("Failed to load sound " + sound, e);
-        }
-        return false;
-    }
 
-    // Source: c-engineer-completed plugin
-    // https://github.com/m0bilebtw/c-engineer-completed
     public void playClip(Sound sound) {
-        long currentMTime = System.currentTimeMillis();
+        try (InputStream in = getClass().getResourceAsStream(sound.getFileName())){
+            float gain = 20f * (float)Math.log(config.soundVolume() / 100f);
 
-        if (clip == null || currentMTime != lastClipMTime || !clip.isOpen()) {
-            if (clip != null && clip.isOpen()) {
-                clip.close();
-            }
-
-            try {
-                clip = AudioSystem.getClip();
-            } catch (LineUnavailableException e) {
-                lastClipMTime = CLIP_MTIME_UNLOADED;
-                log.warn("Failed to get clip for sound " + sound, e);
-                return;
-            }
-
-            lastClipMTime = currentMTime;
-            if (!loadClip(sound)) {
-                return;
-            }
+            audioPlayer.play(in, gain);
+        }catch (IOException | UnsupportedAudioFileException | LineUnavailableException e){
+            log.error("Cannot play clip - " + e.getMessage());
         }
-
-        // User configurable volume
-        FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        float gain = 20f * (float) Math.log10(config.soundVolume() / 100f);
-        gain = Math.min(gain, volume.getMaximum());
-        gain = Math.max(gain, volume.getMinimum());
-        volume.setValue(gain);
-
-        clip.loop(0);
     }
 
     public Sound getRandomSoundclip() {
@@ -123,7 +87,7 @@ public class SoundclipManager {
     }
 
     public Sound getRandomSadSoundClip() {
-        if (ThreadLocalRandom.current().nextInt(20) == 0) {
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             return Sound.SADNESS;
         }
         return Sound.NOTHING;
