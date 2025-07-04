@@ -52,10 +52,10 @@ public class SoundclipManager {
 
 
     public void playClip(Sound sound) {
-        try (InputStream in = getClass().getResourceAsStream(sound.getFileName())){
+        try (InputStream in = getClass().getResourceAsStream(sound.getFileName());
+        BufferedInputStream buf = new BufferedInputStream(in)){
             float gain = 20f * (float)Math.log(config.soundVolume() / 100f);
-
-            audioPlayer.play(in, gain);
+            audioPlayer.play(buf, gain);
         }catch (IOException | UnsupportedAudioFileException | LineUnavailableException e){
             log.error("Cannot play clip - " + e.getMessage());
         }
