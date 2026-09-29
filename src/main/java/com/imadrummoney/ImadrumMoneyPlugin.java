@@ -122,7 +122,7 @@ public class ImadrumMoneyPlugin extends Plugin {
         }
 
         for (ItemStack stack : items) {
-            int value = itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
+            long value = itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
 
             if (value >= config.minValue() && config.receiveLootNotif()) {
                 new Thread(() -> {
